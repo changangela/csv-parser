@@ -2,7 +2,6 @@
 
 ## Usage
 
-### Number of fields
 - number-of-fields script returns the number of fields in the CSV file
 - field-header-column script returns the column position of the specified header string (case insensitive)
 - field-header-row script returns the row number of the header row in the CSV file
