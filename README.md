@@ -17,3 +17,8 @@ Script returns the row number of the header row in the the CSV file.
   ```bash
     $ awk -v numFields=[unsigned int] -f field-header-row.awk "filename.csv"
   ```
+### Get type
+Script returns value of the type given corresponding to the specified key
+  ```bash
+    $ awk -v key="key" -f get-type.awk
+  ```
