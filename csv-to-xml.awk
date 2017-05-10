@@ -18,6 +18,17 @@ function validName(name) {
 	return ret;
 }
 
+function validDescription(description) {
+	gsub("<", "[", description);
+	gsub(">", "]", description);
+	gsub("&", " and ", description);
+	return description;
+}
+
+function validSize(size) {
+	return size ~ /^[0-9]+$/;
+}
+
 function trim(str) {
 	gsub(/^[ \t\n]+|[ \t\n]+$/, "", str);
 	gsub(/^[^a-zA-Z0-9(]+|[^a-zA-Z0-9)]+$/, "", str)
@@ -78,7 +89,7 @@ function getEnum(description) {
 			print "\t\t\t\t<string>" a[i] "</string>"; 
 		}
 	}
-	print("\t\t\t<Items>")
+	print("\t\t\t</Items>")
 }
 function getKey(name, size, description) {
 	
@@ -122,7 +133,7 @@ function getKey(name, size, description) {
 	}
 
 
-	return "";
+	return "dy";
 
 
 }
@@ -140,7 +151,7 @@ BEGIN {
 		#determine the column numbers that correspond to size, name, and description
 		for (i = 1; i <= NF; ++i) {
 			$i = alphaNumeric($i);
-			if (sizeColumn == "" && find($i, "nrbits")) {
+			if (sizeColumn == "" && (find($i, "nr") || find($i, "bits"))) {
 				sizeColumn = i;
 			} else if (descriptionColumn == "" && find($i, "description")) {
 				descriptionColumn = i;
@@ -168,6 +179,12 @@ BEGIN {
 				if (alphaNumeric($sizeColumn) == "") {
 					skip = 1;
 				}
+				if (alphaNumeric($nameColumn) == "") {
+					skip = 1;
+				}
+				if (!validSize($sizeColumn)) {
+					skip = 1;
+				}
 			}
 		}
 
@@ -175,19 +192,18 @@ BEGIN {
 			#trim and format
 			$nameColumn = validName($nameColumn);
 			$sizeColumn = trim($sizeColumn);
-			$descriptionColumn = trim($descriptionColumn);
+			$descriptionColumn = validDescription(trim($descriptionColumn));
 
 			# print the type		
 			key = getKey($nameColumn, $sizeColumn, $descriptionColumn);
 			print "\t\t<Field xsi:type=" getType(key) ">";
-			
+
+			# replace spaces with underscore for valid identifier
+			print "\t\t\t<Name>" $nameColumn "</Name>";
 			#if enumeration
 			if (key == "e") {
 				getEnum($descriptionColumn);
 			}
-
-			# replace spaces with underscore for valid identifier
-			print "\t\t\t<Name>" $nameColumn "</Name>";
 			print "\t\t\t<Description>" $descriptionColumn "</Description>";
 			print "\t\t\t<Size>" $sizeColumn "</Size>";
 			print "\t\t</Field>";
@@ -196,8 +212,8 @@ BEGIN {
 }
 
 END {
-	# if (sizeColumn && descriptionColumn && nameColumn) {
+	if (sizeColumn != "" && descriptionColumn != "" && nameColumn != "" ) {
 		print "\t</Fields>"
 		print "</Message>"
-	# }
+	}
 }
