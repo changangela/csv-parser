@@ -15,3 +15,11 @@
     $ awk -v key="key" -f get-type.awk
     $ awk -v del="deliminator" -f csv-quote "filename.csv" > "fileoutname.csv"
   ```
+- run ```./convert.sh``` 
+  ```bash
+  #!/bin/bash
+  awk -f csv-quote in.txt > processed.txt
+  hr=$(awk -f field-header-row processed.txt)
+  awk -v headerRow=$hr -f csv-to-xml processed.txt > out.xml
+  rm processed.txt
+  ```
