@@ -5,21 +5,16 @@ BEGIN {
 }
 
 # assume the header row is within the first 10 rows
-# assume the header row can be incomplete
-
 NR <= 10 && row == "[not found]" {
-	# check if all columns in row are non-empty
-	isHeaderRow = 3
+	# check if row has more than 1 non empty
+	count = 0;
 	for (i = 1; i <= NF; ++i) {
-		if ("" == $i) {
-			isHeaderRow = isHeaderRow - 1;
-			if (!isHeaderRow) {
-				break;
-			}
-		}	
+		if ("" != $i) {
+			count = count + 1;
+		}
 	}
 
-	if (isHeaderRow) {
+	if (count > 3) {
 		row = NR;
 	}
 }

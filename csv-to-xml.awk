@@ -4,7 +4,7 @@ function validName(name) {
 	ret = "";
 	n = split(name, a, "[^a-zA-Z0-9]+");
 
-	for (i = 1; i <= n && i <= 4; ++i) {
+	for (i = 1; i <= n; ++i) {
 		if (a[i] == "") {
 			continue;
 		}
@@ -19,7 +19,8 @@ function validName(name) {
 }
 
 function trim(str) {
-	gsub(/^[ \t]+|[ \t]+$/, "", str);
+	gsub(/^[ \t\n]+|[ \t\n]+$/, "", str);
+	gsub(/^[^a-zA-Z0-9(]+|[^a-zA-Z0-9)]+$/, "", str)
 	return str;
 }
 
@@ -59,8 +60,8 @@ function find(a, b) {
 }
 
 function isEnum(description) {
-	n = split(description, a, "[ \t]*[0-9]+[ \t]*:");
-	if (n > 3) {
+	n = split(description, a, "[ \t\n]*[0-9]+[ \t\n]*:");
+	if (n >= 3) {
 		return 1;
 	}
 	return 0;
@@ -68,12 +69,14 @@ function isEnum(description) {
 
 function getEnum(description) {
 	print("\t\t\t<Items>")
-	n = split(description, a, "[ \t]*[0-9]+[ \t]*:");
+	n = split(description, a, "[ \t\n]*[0-9]+[ \t\n]*:");
 
-	for (i = 2; i <= n; ++i) {
+	for (i = 0; i <= n; ++i) {
 		#trim
 		a[i] = trim(a[i]);
-		print "\t\t\t\t<string>" a[i] "</string>"; 
+		if (a[i] != "") {
+			print "\t\t\t\t<string>" a[i] "</string>"; 
+		}
 	}
 	print("\t\t\t<Items>")
 }
@@ -84,31 +87,40 @@ function getKey(name, size, description) {
 		return "b";
 	}
 
-	if (find(description, "empty")) {
-		return "dy";
+	# check if it is an enumeration
+	if (isEnum(description)) {
+		return "e";
+	}
+
+	if (find(description, "integer")) {
+		return "i";
+	}
+
+	if (size > 64) {
+		return "s";
 	}
 
 	if (find(description, "bit")) {
 		return "d";
 	}
 
-	# check if it is an enumeration
-	if (isEnum(description)) {
-		return "e";
-	}
-
-	if (size == 32) {
+	#hexadecimal encoding
+	if (find(description, "0x")) {
 		return "i";
 	}
 
-	if (size == 16 || size == 8) {
+	if (find(description, "message")) {
+		return "m";
+	}
+
+	if (size == 16 || size == 32) {
+		return "i";
+	}
+
+	if (size == 8) {
 		return "ui";
 	}
 
-
-	if (size > 32) {
-		return "s";
-	}
 
 	return "";
 
@@ -116,36 +128,50 @@ function getKey(name, size, description) {
 }
 BEGIN {
 	FS = ",";
-	_MIN = 0;
 	_NAME = "";
-
-	print "<Message>";
+	skip = 0;
 }
 
 {
 	if (NR <= headerRow - 1) {
 		_NAME = _NAME $i;
 	} else if (NR == headerRow) {
-		print "\t<Name>" validName(_NAME) "</Name>";
 		
 		#determine the column numbers that correspond to size, name, and description
 		for (i = 1; i <= NF; ++i) {
 			$i = alphaNumeric($i);
-			if (tolower($i) == tolower("nrbits")) {
+			if (sizeColumn == "" && find($i, "nrbits")) {
 				sizeColumn = i;
-			} else if (tolower($i) == tolower("description")) {
+			} else if (descriptionColumn == "" && find($i, "description")) {
 				descriptionColumn = i;
-			} else if (tolower($i) == tolower("fieldname")) {
+			} else if (nameColumn == "" && find($i, "name")) {
 				nameColumn = i;
 			}
 		}
-	} else if (NR == headerRow + 1) {
-	} else if (NR == headerRow + 2) {
-		print "\t<MIN>" 0 "</MIN>";
-		print "\t<Fields>"
+
+		if (sizeColumn != "" && descriptionColumn != "" && nameColumn != "") {
+			print "<Message>";
+			print "\t<Name>" validName(_NAME) "</Name>";
+			print "\t<MIN>" _MIN "</MIN>";
+			print "\t<Fields>"
+		}
 	} else {
+		
+		# do not skip by default
+		skip = 0;
+		
 		# check that row is relevant
-		if (alphaNumeric($(nameColumn - 1)) != "" ) {
+		if (alphaNumeric($(nameColumn - 1)) == "") {
+			if (find($0, "total")) {
+				skip = 1;
+			} else {
+				if (alphaNumeric($sizeColumn) == "") {
+					skip = 1;
+				}
+			}
+		}
+
+		if (!skip) {
 			#trim and format
 			$nameColumn = validName($nameColumn);
 			$sizeColumn = trim($sizeColumn);
@@ -157,7 +183,7 @@ BEGIN {
 			
 			#if enumeration
 			if (key == "e") {
-				getEnum(description);
+				getEnum($descriptionColumn);
 			}
 
 			# replace spaces with underscore for valid identifier
@@ -170,6 +196,8 @@ BEGIN {
 }
 
 END {
-	print "\t</Fields>"
-	print "</Message>"
+	# if (sizeColumn && descriptionColumn && nameColumn) {
+		print "\t</Fields>"
+		print "</Message>"
+	# }
 }

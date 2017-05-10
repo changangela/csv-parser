@@ -3,12 +3,14 @@ BEGIN {
 }
 
 {
-	# ignore the beginning
-	$1 = "";
+	n = split($0, a, "[ \t]*[0-9]+[ \t]*:");
 
-	# trim
-	gsub(/^[ \t]+|[ \t]+$/, "", $0);
-	print "\t<String>" $0 "</String>"; 
+	for (i = 2; i <= n; ++i) {
+		#trim
+		gsub(/^[ \t]+|[ \t]+$/, "", a[i])
+		print "\t<string>" a[i] "</string>"; 
+	}
+
 }
 
 END {

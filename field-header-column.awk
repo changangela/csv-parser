@@ -1,20 +1,26 @@
 # begin of processing
 BEGIN {
 	FS = ",";
-	column = "[not found]";
+	row = "[not found]";
 }
 
-# Assume the header row is within the first 10 rows
-NR <= 10 {
+# assume the header row is within the first 10 rows
+NR <= 10 && row == "[not found]" {
+	# check if all columns in row are non-empty
+	isHeaderRow = 1
 	for (i = 1; i <= NF; ++i) {
-		if (tolower(fieldName) == tolower($i)) {
-			column = i;
+		if ("" == $i) {
+			isHeaderRow = 0;
 			break;
 		}	
+	}
+
+	if (isHeaderRow && NF == numFields) {
+		row = NR;
 	}
 }
 
 # end of processing
 END {
-	print column;
+	print row;
 }
