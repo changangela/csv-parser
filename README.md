@@ -2,24 +2,23 @@
 
 ## Usage
 
-- ```number-of-fields``` script returns the number of fields in the CSV file
-- ```field-header-column``` script returns the column position of the specified header string (case insensitive)
-- ```field-header-row``` script returns the row number of the header row in the CSV file
-- ```csv-quote``` parses entire csv file to replace line breaks between quotes with tabs (necessary for awk line by line parsing)
-- ```number-of-fields``` script replaces or trims line breaks within quotations and returns the generated file
+- ```nf``` script returns the number of fields in the CSV file
+- ```fc``` script returns the column position of the specified header string (case insensitive)
+- ```fr``` script returns the row number of the header row in the CSV file
+- ```xml``` parses entire csv file and generates appropriate xml file
+- ```qtrim``` script replaces or trims line breaks within quotations and returns the generated file (required for awk line by line parsing)
 
   ```bash
-    $ awk -f number-of-fields.awk "filename.csv"
-    $ awk -v fieldName="header string" -f field-header-column.awk "filename.csv"
-    $ awk -v numFields=[unsigned int] -f field-header-row.awk "filename.csv"
-    $ awk -v key="key" -f get-type.awk
-    $ awk -v del="deliminator" -f csv-quote "filename.csv" > "fileoutname.csv"
+    $ awk -f nf "filename.csv"
+    $ awk -v fieldName="header string" -f fc "filename.csv"
+    $ awk -v numFields=[unsigned int] -f fr "filename.csv"
+    $ awk -v del="deliminator" -f qtrim "filename.csv" > "fileoutname.csv"
   ```
 - run ```./convert.sh``` 
   ```bash
   #!/bin/bash
-  awk -f csv-quote in.txt > processed.txt
-  hr=$(awk -f field-header-row processed.txt)
-  awk -v headerRow=$hr -f csv-to-xml processed.txt > out.xml
+  awk -f qtrim in.txt > processed.txt
+  hr=$(awk -f fr processed.txt)
+  awk -v headerRow=$hr -f xml processed.txt > out.xml
   rm processed.txt
   ```
