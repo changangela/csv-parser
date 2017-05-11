@@ -14,8 +14,8 @@ $ awk -v fieldName="header string" -f fc "filename.csv"
 $ awk -v numFields=[unsigned int] -f fr "filename.csv"
 $ awk -v del="deliminator" -f qtrim "filename.csv" > "fileoutname.csv"
 ```
-- run ```./convert.sh``` for direct conversion to XML
-- run ```./convert.sh``` for direct conversion to JSON
+- run ```./xml.sh``` for direct conversion to XML
+- run ```./json.sh``` for direct conversion to JSON
 ```bash
 $ awk -f qtrim in.txt > processed.txt
 $ hr=$(awk -f fr processed.txt)
