@@ -5,7 +5,7 @@
 - ```number-of-fields``` script returns the number of fields in the CSV file
 - ```field-header-column``` script returns the column position of the specified header string (case insensitive)
 - ```field-header-row``` script returns the row number of the header row in the CSV file
-- ```get-type``` script returns the value of the type corresponding to the specified key
+- ```csv-quote``` parses entire csv file to replace line breaks between quotes with tabs (necessary for awk line by line parsing)
 - ```number-of-fields``` script replaces or trims line breaks within quotations and returns the generated file
 
   ```bash
