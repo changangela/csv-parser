@@ -4,8 +4,9 @@ BEGIN {
 	row = "[not found]"
 }
 
-# assume the header row is within the first 10 rows
-NR <= 10 && row == "[not found]" {
+# assume the header row is the first row that has more than 1 non empty field
+row == "[not found]" {
+	
 	# check if row has more than 1 non empty
 	count = 0;
 	for (i = 1; i <= NF; ++i) {
@@ -14,7 +15,7 @@ NR <= 10 && row == "[not found]" {
 		}
 	}
 
-	if (count > 3) {
+	if (count > 1) {
 		row = NR;
 	}
 }
