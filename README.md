@@ -1,4 +1,4 @@
-# csv-processor
+# csv-suite
 
 ## Usage
 
