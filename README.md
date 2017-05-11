@@ -6,7 +6,7 @@
 - ```fc``` returns the column position of the specified header string (case insensitive)
 - ```fr``` returns the row number of the header row in the CSV file
 - ```xml``` parses entire csv file and generates appropriate xml file
-- ```qtrim``` replaces or trims line breaks within quotations and returns the generated file (required for awk line by line parsing)
+- ```qtrim``` trims line breaks within quotations and returns the generated file (required for awk line by line parsing)
 
   ```bash
     $ awk -f nf "filename.csv"
