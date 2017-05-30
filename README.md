@@ -1,5 +1,7 @@
 # csv-suite
 
+**CSV Suite** is a RFC 4180 compliant CSV parsing and encoding bash utility. Allows for cross directory conversion of files from CSV to JSON or XML.
+
 ## Usage
 
 * ```nf``` returns the number of fields in the CSV file
