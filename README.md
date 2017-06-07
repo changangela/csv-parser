@@ -38,3 +38,19 @@ $ hr=$(awk -f fr processed.txt)
 $ awk -v headerRow=$hr -f xml processed.txt > out.xml
 $ rm processed.txt
 ```
+
+#### JSON
+```bash
+$ awk -f qtrim in.txt > processed.txt
+$ hr=$(awk -f fr processed.txt)
+$ awk -v headerRow=$hr -f json processed.txt > out.json
+$ rm processed.txt
+```
+#### KV
+```bash
+$ awk -f qtrim in.txt > processed.txt
+$ hr=$(awk -f fr processed.txt)
+$ hc = $(awk -f fc processed.txt)
+$ awk -v headerrow=$hr -v fieldcolumn=$hc -f kv processed.txt > out.txt
+$ rm processed.txt
+```
