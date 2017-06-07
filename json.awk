@@ -4,13 +4,13 @@ function trim(str) {
   return str;
 }
 
-function specialTrim(str) {
+function specialtrim(str) {
   # regex to remove all non alphanumeric trailing and leading whitespace
   gsub(/^[^a-zA-Z0-9(]+|[^a-zA-Z0-9)]+$/, "", str);
   return str;
 }
 
-function alphaNumeric(str) {
+function alphanumeric(str) {
   # regex to remove all non alphanumeric characters
   gsub("[^a-zA-Z0-9]+", "", str);
   return str;
@@ -25,7 +25,7 @@ function find(a, b) {
 BEGIN{
   FS=","
 
-  for (j = 1; j < headerRow; ++j) {
+  for (j = 1; j < headerrow; ++j) {
     getline;
     _NAME = _NAME $0;
   }
@@ -33,7 +33,7 @@ BEGIN{
   # grab headers
   getline;
   for (i = 1; i <= NF; ++i) {
-    headerNames[i] = alphaNumeric($i);
+    headerNames[i] = alphanumeric($i);
   }
 
   print "data = {"

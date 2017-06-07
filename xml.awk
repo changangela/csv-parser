@@ -13,13 +13,13 @@ function trim(str) {
 	return str;
 }
 
-function specialTrim(str) {
+function specialtrim(str) {
 	# regex to remove all non alphanumeric trailing and leading whitespace
 	gsub(/^[^a-zA-Z0-9(]+|[^a-zA-Z0-9)]+$/, "", str);
 	return str;
 }
 
-function alphaNumeric(str) {
+function alphanumeric(str) {
 	# regex to remove all non alphanumeric characters
 	gsub("[^a-zA-Z0-9]+", "", str);
 	return str;
@@ -52,17 +52,17 @@ BEGIN {
 		_NAME = _NAME $i;
 	} else if (NR == headerRow) {
 		# trim the NAME variable to be a valid xml tag
-		_NAME = alphaNumeric(_NAME);
+		_NAME = alphanumeric(_NAME);
 		
 		# print the XML header
 		header()
 
 		# populate the field headers array
-		n = split($0, fieldHeaders, FS);
+		n = split($0, fieldheaders, FS);
 
 		# trim and make valid
 		for (i = 1; i <= n; ++i) {
-			fieldHeaders[i] = alphaNumeric(fieldHeaders[i]);
+			fieldheaders[i] = alphanumeric(fieldheaders[i]);
 		}
 
 	} else {
@@ -71,7 +71,7 @@ BEGIN {
 		skip = 0;
 		
 		# check that row is relevant
-		if (alphaNumeric($0) == "") {
+		if (alphanumeric($0) == "") {
 			# the row has no content
 			skip = 1;
 		}
@@ -80,10 +80,10 @@ BEGIN {
 			print "\t<Field>"
 			for (i = 1; i <= NF; ++i) {
 				#trim and format
-				$i = specialTrim($i);
-				print "\t\t<"fieldHeaders[i]">"
+				$i = specialtrim($i);
+				print "\t\t<"fieldheaders[i]">"
 				print "\t\t\t"$i
-				print "\t\t<\\"fieldHeaders[i]">"
+				print "\t\t<\\"fieldheaders[i]">"
 			}
 			print "\t<\\Field>"
 		}
